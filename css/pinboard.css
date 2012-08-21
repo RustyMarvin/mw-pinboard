@@ -1,0 +1,472 @@
+@charset "utf-8";
+
+/*!
+ * Styles for MW Pinboard - (c)2012 Markus von der Wehd <mvdw@mwin.de>
+ */
+
+html {
+	height: 100%;
+}
+body {
+	/* padding: 8px 16px 8px 16px; */
+	padding: 0px;
+	margin: 0px;
+	background-color: #3D4E59;
+	color: #848999;
+
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+}
+a {
+	color: #00BBFF;
+	text-decoration: none;
+}
+a:hover {
+	color: #60D4FF;
+	text-decoration: underline;
+}
+
+/* page -------------------------------------------------------------------- */
+
+div.header {
+	/* avoid different heights because of os/browser font */
+	height: 42px;
+	overflow: hidden;
+}
+
+h1.pageH1 {
+	font-size: 18px;
+	font-weight:bold;
+	margin:0px 16px 0px 16px;
+	padding:9px 0px 11px 0px;
+	color:#00ADEE;
+	text-align: center;
+	cursor: default;
+}
+
+div.header select.menu {
+	position: absolute;
+	top: 8px;
+	left: 16px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	margin: 0px 8px 0px 0px;
+	padding: 2px 4px 2px 4px;
+	background-color: #3D4E59;
+	color: #DDDDDD;
+	border: 2px solid #00ADEE;
+	border-radius: 3px;
+}
+div.header select.menu optgroup {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #00ADEE;
+	font-style: normal;
+	margin: 4px 0px 0px 0px;
+	padding: 2px;
+}
+div.header select.menu optgroup option {
+	color: #DDDDDD;
+}
+
+/* board ------------------------------------------------------------------- */
+
+div.pinboard {
+	position: relative;
+	overflow: auto;
+	padding: 0px;
+	margin: 0px 16px 16px 16px; /* hardcoded in board.js ! */
+	color:#333333;
+	background-color:#E8E8E8;
+	background-image: url(../img/bg_limba.jpg);
+	background-repeat: repeat;
+	border-radius: 10px;
+}
+
+/* copyright --------------------------------------------------------------- */
+
+div.copyright {
+	position: absolute;
+	margin: 0px;
+	padding: 2px 6px 2px 6px;
+	left: 0px;
+	bottom: 0px;
+}
+div.copyright:hover {
+	background-color: #FFFCC4;
+	border-right: 1px solid #333333;
+	border-top: 1px solid #333333;
+	border-top-right-radius: 10px;
+}
+div.copyright a, div.copyright a:hover {
+	color: #333333;
+	text-decoration: none;
+}
+
+/* notes ------------------------------------------------------------------- */
+
+div.note {
+	width: 170px;
+	height: 90px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	padding: 0px;
+	margin: 0px;
+	cursor: text;
+	/* set to test if background-color visible between input and textarea */
+	background-color:#0000FF;
+	box-shadow: 3px 3px 9px #222222;
+}
+div.note input {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	height: 18px;
+	line-height: 18px;
+	padding: 4px 4px 4px 4px;
+	border: none;
+	cursor: inherit;
+	width: 162px;
+}
+/* google chrome input marker */
+div.note input:focus {
+	outline: none;
+}
+div.note textarea {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	padding: 4px;
+	margin: 0px 0px 0px 0px;
+	border: none;
+	background-color:#FFFCC4;
+	cursor: inherit;
+	resize: none;
+	width: 162px;
+	height: 56px;
+}
+/* google chrome input marker */
+div.note textarea:focus {
+	outline: none;
+}
+
+div.notePin {
+	position: absolute;
+	left: -11px;
+	top: -21px;
+	width: 24px;
+	height: 29px;
+	background-color: transparent;
+	background-image: url(../img/pin_black.png);
+	background-repeat: no-repeat;
+	background-position: 0px 0px;
+	cursor: move;
+}
+div.noteClose {
+	position: absolute;
+	top: 5px;
+	right: 2px;
+	width: 16px;
+	height: 16px;
+	background-color: transparent;
+	background-image: url(../img/icons_sprite.png);
+	background-repeat: no-repeat;
+	background-position: -16px 0px;
+	cursor: pointer;
+}
+div.noteResize {
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	width: 16px;
+	height: 16px;
+	background-color: transparent;
+	background-image: url(../img/icons_sprite.png);
+	background-repeat: no-repeat;
+	background-position: -32px 0px;
+	cursor: se-resize;
+}
+
+/* fields ------------------------------------------------------------------ */
+
+div.field {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	/* bg test */
+	background-color: transparent;
+	background-repeat: repeat;
+}
+/* field background variants */
+div.fieldBgClear {
+	background-image: none;
+}
+div.fieldBgLight {
+	background-image: url(../img/bg_888888_32.png);
+}
+div.fieldBgDark {
+	background-image: url(../img/bg_888888_96.png);
+}
+/* field content */
+div.fieldName {
+	padding: 8px 0px 8px 0px;
+	margin: 0px;
+	background-color: transparent;
+	background-repeat: repeat;
+	background-image: url(../img/bg_FFFFFF_96.png);
+}
+div.fieldName input {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 0px 0px 0px 0px;
+	border: none;
+	background-color: transparent;
+	text-align: center;
+	width: 100%;
+}
+/* google chrome input marker */
+div.fieldName input:focus {
+	outline: none;
+}
+
+div.fieldIcon {
+	position: absolute;
+	top: 11px;
+	width: 16px;
+	height: 16px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	cursor: pointer;
+	z-index: 2;
+}
+div.fieldEye {
+	right: 50px;
+	background-image: url(../img/icons_sprite.png);
+	background-position: -48px 0px;
+}
+div.fieldRemove {
+	right: 32px;
+	background-image: url(../img/icons_sprite.png);
+	background-position: -64px 0px;
+}
+div.fieldAdd {
+	right: 14px;
+	background-image: url(../img/icons_sprite.png);
+	background-position: -80px 0px;
+}
+div.fieldDivider {
+	right: -8px;
+	background-image: url(../img/icons_sprite.png);
+	background-position: -96px 0px;
+}
+
+/* note add dialog --------------------------------------------------------- */
+
+div.addDialog {
+	position: absolute;
+	/*
+	left: 100px;
+	top: 100px;
+	*/
+	border: 1px solid #444444;
+	padding: 6px 12px 12px 12px;
+	/* background-color: #FFFCC4; */
+	background-color: transparent;
+	background-repeat: repeat;
+	background-image: url(../img/bg_FFFFFF_128.png);
+	box-shadow: 3px 3px 9px #222222;
+
+	display: none;
+}
+div.addDialogHead {
+	width: 80px;
+	padding: 2px 8px 2px 8px;
+	text-align: center;
+	margin: 0px 0px 6px 0px;
+	font-weight: bold;
+}
+div.addOption {
+	font-size: 10px;
+	line-height: 19px;
+	width: 80px;
+	padding: 2px 8px 2px 8px;
+	margin: 0px 0px 0px 0px;
+	cursor: pointer;
+}
+
+/* about dialog ------------------------------------------------------------ */
+
+div.aboutDialog {
+	position: relative;
+	width: 555px;
+/*
+	left: 254px;
+	top: 196px;
+*/
+	color: #EEEEEE;
+	background-color: #3D4E59;
+
+	padding: 16px 16px 16px 16px;
+	margin: 96px auto;
+
+	border: 2px solid #00ADEE;
+	border-radius: 10px;
+	box-shadow: 3px 3px 9px #222222;
+
+	display: none;
+	z-index: 1002;
+}
+div.aboutDialog h1 {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0px 0px 10px 0px;
+	padding: 0px 0px 0px 0px;
+	color: #00ADEE;
+	text-align: center;
+}
+div.aboutDialog img {
+	border: none;
+	vertical-align: middle;
+}
+div.hr {
+	padding: 2px 0px 2px 0px;
+	margin: 0px 0px 12px 0px;
+	border-bottom: 1px solid #CCCCCC;
+}
+div.center {
+	text-align: center;
+}
+
+/* secret dialog ----------------------------------------------------------- */
+
+div.secretDialog {
+	position: relative;
+	width: 320px;
+/*
+	left: 254px;
+	top: 196px;
+*/
+	color: #EEEEEE;
+	background-color: #3D4E59;
+
+	padding: 16px 16px 16px 16px;
+	margin: 96px auto;
+
+	border: 2px solid #00ADEE;
+	border-radius: 10px;
+	box-shadow: 3px 3px 9px #222222;
+
+	display: none;
+	z-index: 1002;
+}
+div.secretDialog h1 {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0px 0px 10px 0px;
+	padding: 0px 0px 0px 0px;
+	color: #00ADEE;
+	text-align: left;
+}
+
+/* delete dialog ----------------------------------------------------------- */
+
+div.deleteDialog {
+	position: relative;
+	width: 320px;
+	color: #EEEEEE;
+	background-color: #3D4E59;
+
+	padding: 16px 16px 16px 16px;
+	margin: 96px auto;
+
+	border: 2px solid #00ADEE;
+	border-radius: 10px;
+	box-shadow: 3px 3px 9px #222222;
+
+	text-align: center;
+	display: none;
+	z-index: 1002;
+}
+div.deleteDialog h1 {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0px 0px 10px 0px;
+	padding: 0px 0px 0px 0px;
+	color: #00ADEE;
+	text-align: center;
+}
+
+/* rename dialog ----------------------------------------------------------- */
+
+div.renameDialog {
+	position: relative;
+	width: 320px;
+	color: #EEEEEE;
+	background-color: #3D4E59;
+
+	padding: 16px 16px 16px 16px;
+	margin: 96px auto;
+
+	border: 2px solid #00ADEE;
+	border-radius: 10px;
+	box-shadow: 3px 3px 9px #222222;
+
+	text-align: center;
+	display: none;
+	z-index: 1002;
+}
+div.renameDialog h1 {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0px 0px 10px 0px;
+	padding: 0px 0px 0px 0px;
+	color: #00ADEE;
+	text-align: center;
+}
+div.renameDialog label {
+	font-size: 12px;
+	display: block;
+	color: #DDDDDD;
+}
+div.renameDialog p.special {
+	text-align: left;
+	padding: 0px 0px 0px 70px;
+}
+div.renameDialog input, div.renameDialog textarea {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	width: 180px;
+}
+div.renameDialog input {
+	margin: 0px 0px 8px 0px;
+}
+
+span.error {
+	color: #FFBB00;
+	padding: 0px 0px 0px 20px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-image: url(../img/icon_attention.png);
+	background-position: 0px 1px;
+	/* style has to be block, not none, else jQuery's .show() sets display 'inline' (span default) */
+	display: block;
+}
+
+/* dialog bg darkening ----------------------------------------------------- */
+
+div.dialogDarkening {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	background-color: transparent;
+	background-repeat: repeat;
+	background-image: url(../img/bg_888888_128.png);
+	z-index: 1001;
+	display: none;
+}

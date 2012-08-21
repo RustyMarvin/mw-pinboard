@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- MW Pinboard - (c)2012 Markus von der Wehd <mvdw@mwin.de> -->
+
+		<meta charset="utf-8">
+		<link type="image/x-icon" rel="icon" href="favicon.ico">
+		<link type="image/x-icon" rel="shortcut icon" href="favicon.ico">
+		<title>MW Pinboard</title>
+
+		<link type="text/css" href="css/pinboard.css" rel="stylesheet" />
+
+		<script type="text/javascript" src="js/LAB.min.js"></script>
+		<script type="text/javascript">
+		$LAB.script('js/jquery-1.7.2.min.js')
+			// .script('js/gibberish-aes.min.js')
+			.script('js/pinboard_events.js')
+			.script('js/pinboard_timer.js').wait()
+			.script('js/pinboard_mousemove.js')
+			.script('js/pinboard_mouseresize.js')
+			.script('js/pinboard_storage_local.js').wait()
+			// .script('js/pinboard_storage_server.js').wait()
+			.script('js/pinboard_fields.js')
+			.script('js/pinboard_notes.js')
+			.script('js/pinboard_board.js').wait(function(){
+				// MW_Pinboard.Board.init({ mode: 'local' });
+				MW_Pinboard.Board.init();
+			});
+		</script>
+	</head>
+
+	<body>
+		<div class="header" id="header">
+			<h1 class="pageH1" id="boardTitle"></h1>
+			<select id="pinboardMenu" class="menu" name="pinboardMenu" size="1">
+				<option class="main" value="0" selected="selected">Menu</option>
+			</select>
+		</div>
+		<div class="pinboard" id="pinboard">
+			<div class="addDialog" id="addDialog">
+				<div class="addDialogHead">Add Note</div>
+			</div>
+
+			<div class="aboutDialog" id="aboutDialog">
+				<h1>About MW Pinboard</h1>
+				<div class="hr"></div>
+				<p>Copyright &copy; 2012 Markus von der Wehd, <a href="mailto:mvdw@mwin.de" target="_blank">mvdw@mwin.de</a></p>
+				<p>This program is free software: you can redistribute it and/or modify
+					it under the terms of the GNU General Public License as published by
+					the Free Software Foundation, either version 3 of the License, or
+					(at your option) any later version.</p>
+				<p>This program is distributed in the hope that it will be useful,
+					but WITHOUT ANY WARRANTY; without even the implied warranty of
+					MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+					GNU General Public License for more details.</p>
+				<p><a href="http://www.gnu.org/licenses/gpl-3.0" target="_blank"><img src="img/gplv3-88x31.png" width="88" height="31"></a>
+					<a href="http://www.gnu.org/licenses/gpl-3.0" target="_blank">www.gnu.org/licenses/gpl-3.0</a></p>
+				<p><a href="https://github.com/RustyMarvin" target="_blank"><img src="img/octocat_small.png" width="88" height="35"></a>
+					<a href="https://github.com/RustyMarvin" target="_blank">View the source on github.</a></p>
+				<p>The 'Limba' background texture is &copy; 2002/2010 by <a href="http://www.noctua-graphics.de" target="_blank">NOCTUA Graphics</a></p>
+				<div class="hr"></div>
+				<div class="center"><button id="aboutClose">Close</button></div>
+			</div>
+
+			<div class="deleteDialog" id="deleteDialog">
+				<h1>Delete Board</h1>
+				<div class="hr"></div>
+				<p>You are about to<br>
+					<strong>delete the whole board</strong><br>
+					with all fields and notes!</p>
+				<p>Please confirm the deletion.</p>
+				<div class="hr"></div>
+				<div class="center">
+					<button id="deleteConfirm">Delete</button>
+					<button id="deleteCancel">Cancel</button>
+				</div>
+			</div>
+
+			<div class="renameDialog" id="renameDialog">
+				<h1>Rename Board</h1>
+				<div class="hr"></div>
+
+				<p class="special">
+					<label for="title">Title:</label>
+					<input id="renameTitle" type="text" name="title" value="">
+					<span class="error" id="renameError"></span>
+					<br>
+					<label for="desc">Description: (optional)</label>
+					<textarea id="renameDesc" name="desc" rows="4"></textarea>
+				</p>
+
+				<div class="hr"></div>
+				<div class="center">
+					<button id="renameConfirm">Rename</button>
+					<button id="renameCancel">Cancel</button>
+				</div>
+			</div>
+
+			<!--
+			<div class="secretDialog" id="secretDialog">
+				<form action="">
+					<h1>Encryption secret</h1>
+					<div class="hr"></div>
+					<p>Please enter the encryption secret:</p>
+					<input type="password" size="20" name="secret" id="secret" />
+					<button type="submit">Enter</button>
+				</form>
+			</div>
+			-->
+
+			<div class="copyright"><a href="http://www.mwin.de/" target="_blank">&copy; 2012 Markus von der Wehd</a></div>
+
+			<div class="dialogDarkening" id="dialogDarkening"></div>
+		</div>
+	</body>
+</html>
