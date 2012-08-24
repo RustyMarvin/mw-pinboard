@@ -35,7 +35,7 @@ div.header {
 	overflow: hidden;
 }
 
-h1.pageH1 {
+div.header h1 {
 	font-size: 18px;
 	font-weight:bold;
 	margin:0px 16px 0px 16px;
@@ -44,7 +44,19 @@ h1.pageH1 {
 	text-align: center;
 	cursor: default;
 }
-
+div.header h2 {
+	font-size: 18px;
+	font-weight:bold;
+	margin:0px 16px 0px 16px;
+	padding:9px 0px 11px 0px;
+	color:#00ADEE;
+	/* color:#DDDDDD; */
+	text-align: center;
+	cursor: default;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
 div.header select.menu {
 	position: absolute;
 	top: 8px;
