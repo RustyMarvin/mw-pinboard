@@ -128,7 +128,8 @@
 
 		currentLeftPos = 0;
 		$.each(this.fieldsSetup, function (index , fieldSetup) {
-			var isLastField = (index === indexLast),
+			var isFirstField = (index === 0),
+				isLastField = (index === indexLast),
 				isSingleField = (indexLast === 0),
 				title = fieldSetup.title,
 				cssClass = self.fieldCssClasses[fieldSetup.cssClass],
@@ -151,6 +152,14 @@
 
 			$eye = $('<div class="fieldIcon fieldEye" title="Change background"></div>');
 			$add = $('<div class="fieldIcon fieldAdd" title="Add new column"></div>');
+
+			// extra classes for first/last field to set rounded corners
+			if (isFirstField) {
+				cssClass += ' first';
+			}
+			if (isLastField) {
+				cssClass += ' last';
+			}
 
 			$field = $('<div class="field ' + cssClass + '"></div>')
 				.width(width)

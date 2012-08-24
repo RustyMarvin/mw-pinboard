@@ -112,6 +112,7 @@ div.copyright:hover {
 	border-right: 1px solid #333333;
 	border-top: 1px solid #333333;
 	border-top-right-radius: 10px;
+	border-bottom-left-radius: 10px;
 }
 div.copyright a, div.copyright a:hover {
 	color: #333333;
@@ -245,7 +246,6 @@ div.fieldName input {
 div.fieldName input:focus {
 	outline: none;
 }
-
 div.fieldIcon {
 	position: absolute;
 	top: 11px;
@@ -275,6 +275,22 @@ div.fieldDivider {
 	right: -8px;
 	background-image: url(../img/icons_sprite.png);
 	background-position: -96px 0px;
+}
+
+/* fix sharp corners visible if background image selected (same radius as div.pinboard) */
+div.field.first {
+	border-top-left-radius: 10px;
+	border-bottom-left-radius: 10px;
+}
+div.field.first div.fieldName {
+	border-top-left-radius: 10px;
+}
+div.field.last {
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+}
+div.field.last div.fieldName {
+	border-top-right-radius: 10px;
 }
 
 /* note add dialog --------------------------------------------------------- */
