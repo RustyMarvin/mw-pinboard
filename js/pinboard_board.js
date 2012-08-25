@@ -106,13 +106,15 @@
 	// static board object ====================================================
 
 	Board = {
+		mode: 'local',
 		$pinboard: null,
+		userParams: null,
 		boardParams: null,
 		// list of notes, needed to update all notes at once
 		notesList: [],
 		// max z-index counter for new notes (and dialogs)
 		zIndexMax: 0,
-		menuCommands: null,
+		menuCommands: [],
 		$dialogDarkening: null,
 		$aboutDialog: null,
 		$deleteDialog: null,
@@ -131,9 +133,13 @@
 		if (mode !== 'local' && mode !== 'server') {
 			throw new Error('Board: invalid option \'mode\' given!');
 		}
+		this.mode = mode;
 
-		// stores the actual menu functions, each index corresponds to the index of the select element
-		this.menuCommands = [];
+		var initNext = function () {
+			$(window.document).ready(function () {
+				self.initBoard();
+			});
+		};
 
 		// init the storage module which itself checks if storage is available (local storage or server)
 		Storage.init(function (err) {
@@ -142,56 +148,59 @@
 				throw err;
 			}
 
-			var init = function () {
-				$(window.document).ready(function () {
-					self.initBoard();
-				});
-			};
-
-			// get board from db, if no board then setup default params
-			// with MongoDB we ALWAYS get a board, but fields array could be empty
-			Storage.getCurrentBoard(function (err, board) {
-				var boardDb;
-
+			// get current user
+			Storage.getCurrentUser(function (err, user) {
 				if (err) {
 					alert(err.message);
 					throw err;
 				}
+				self.userParams = user;
 
-				if (!board) {
-					boardDb = $.extend({}, boardDefaults, { fields: fieldsDefaults });
-					// db insert board, update id
-					Storage.insertBoard(boardDb, function (err, id) {
-						if (err) {
-							alert(err.message);
-							throw err;
-						}
+				// get board from db, if no board then setup default params
+				// with MongoDB we ALWAYS get a board, but fields array could be empty
+				Storage.getCurrentBoard(function (err, board) {
+					var boardDb;
 
-						self.boardParams = $.extend(boardDb, { id: id });
-						init();
-					});
-					return;
-				}
+					if (err) {
+						alert(err.message);
+						throw err;
+					}
 
-				// std...
-				if (!board.fields || !board.fields.length) {
-					boardDb = $.extend({}, board, { fields: fieldsDefaults });
-					// db update board
-					Storage.updateBoard(boardDb, function (err) {
-						if (err) {
-							alert(err.message);
-							throw err;
-						}
+					if (!board) {
+						boardDb = $.extend({}, boardDefaults, { fields: fieldsDefaults });
+						// db insert board, update id
+						Storage.insertBoard(boardDb, function (err, id) {
+							if (err) {
+								alert(err.message);
+								throw err;
+							}
 
-						self.boardParams = $.extend({}, boardDb);
-						init();
-					});
-					return;
-				}
+							self.boardParams = $.extend(boardDb, { id: id });
+							initNext();
+						});
+						return;
+					}
 
-				// storage ok, init board
-				self.boardParams = $.extend({}, board);
-				init();
+					// got board, check for empty fields, create default fields
+					if (!board.fields || !board.fields.length) {
+						boardDb = $.extend({}, board, { fields: fieldsDefaults });
+						// db update board
+						Storage.updateBoard(boardDb, function (err) {
+							if (err) {
+								alert(err.message);
+								throw err;
+							}
+
+							self.boardParams = $.extend({}, boardDb);
+							initNext();
+						});
+						return;
+					}
+
+					// storage ok, init board
+					self.boardParams = $.extend({}, board);
+					initNext();
+				});
 			});
 		});
 	};
@@ -199,15 +208,18 @@
 	// must be called AFTER dom ready
 	Board.initBoard = function () {
 		var self = this,
-			boardParams,
+			userParams = this.userParams,
+			boardParams = this.boardParams,
 			saveBoard,
 			headHeight,
 			viewportWidth,
 			viewportHeight;
 
-		// setup board --------------------------------------------------------
+		// setup header
+		$('#userNick').text(userParams && userParams.nick || '');
+		$('#boardTitle').text(boardParams.title);
 
-		boardParams = this.boardParams;
+		// setup board --------------------------------------------------------
 		saveBoard = false;
 		if (boardParams.width === 0 || boardParams.height === 0) {
 			// fresh board, calc dimensions
@@ -219,8 +231,6 @@
 			boardParams.height = viewportHeight - headHeight - 16; // use .outerHeight(true) to include margins
 			saveBoard = true;
 		}
-
-		$('#boardTitle').text(boardParams.title);
 
 		this.$pinboard = $('#pinboard').width(boardParams.width).height(boardParams.height);
 

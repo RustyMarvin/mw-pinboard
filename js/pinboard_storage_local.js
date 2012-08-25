@@ -92,6 +92,137 @@
 		secret = s || '';
 	};
 
+	// user -------------------------------------------------------------------
+
+	// for local storage, this simply returns a default object with empty fields
+	// for server version, this returnes the current user
+	Storage.getCurrentUser = function (callback) {
+		window.setTimeout(function () {
+			var user = { id: '', nick: '' };
+
+			callback(null, user);
+		}, 0);
+	};
+
+	// board ------------------------------------------------------------------
+
+	// for local storage, this simply returns the only board that is stored
+	// for server version, this returnes the currently selected board
+	Storage.getCurrentBoard = function (callback) {
+		window.setTimeout(function () {
+			var id = 'id' + boardIdCounter,
+				key = boardKeyPrefix + id,
+				boardJ = window.localStorage.getItem(key),
+				boardObj = null;
+
+			// console.log('Storage: found board: ' + boardJ);
+			if (boardJ !== null) {
+				try {
+					boardObj = window.JSON.parse(boardJ);
+				} catch (e) {
+					callback(new Error('Storage: Error while json parsing board \'' + key + '\' !'));
+					return;
+				}
+			}
+			callback(null, boardObj);
+		}, 0);
+	};
+
+	Storage.insertBoard = function (board, callback) {
+		window.setTimeout(function () {
+			var id,
+				key,
+				boardDb,
+				boardJ;
+
+			// generate new id
+			boardIdCounter += 1;
+			window.localStorage.setItem(boardIdCounterKey, boardIdCounter);
+
+			// insert board
+			id = 'id' + boardIdCounter;
+			key = boardKeyPrefix + id;
+			boardDb = $.extend({}, board, {id: id});
+			boardJ = window.JSON.stringify(boardDb);
+
+			window.localStorage.setItem(key, boardJ);
+
+			callback(null, id);
+		}, 0);
+	};
+
+	Storage.updateBoard = function (board, callback) {
+		window.setTimeout(function () {
+			var key = boardKeyPrefix + board.id,
+				boardJ = window.JSON.stringify(board);
+
+			if (!board.id) {
+				callback(new Error('Storage: updateBoard() No board id in given board!'));
+				return;
+			}
+
+			window.localStorage.setItem(key, boardJ);
+
+			callback(null);
+		}, 0);
+	};
+
+	// for local storage this simply updates the whole board
+	// for MongoDB this updates only the boards fields 'title'/'desc' ($set)
+	Storage.updateBoardsTitle = function (board, callback) {
+		window.setTimeout(function () {
+			var key = boardKeyPrefix + board.id,
+				boardJ = window.JSON.stringify(board);
+
+//
+// TODO: check if board title exists
+//
+
+			if (!board.id) {
+				callback(new Error('Storage: updateBoardsFields() Invalid board id!'));
+				return;
+			}
+
+			window.localStorage.setItem(key, boardJ);
+
+			callback(null);
+		}, 0);
+	};
+
+	// for local storage this simply updates the whole board
+	// for MongoDB this updates only the boards fields 'fields' ($set)
+	Storage.updateBoardsFields = function (board, callback) {
+		window.setTimeout(function () {
+			var key = boardKeyPrefix + board.id,
+				boardJ = window.JSON.stringify(board);
+
+			if (!board.id) {
+				callback(new Error('Storage: updateBoardsFields() No board id in given board!'));
+				return;
+			}
+
+			window.localStorage.setItem(key, boardJ);
+
+			callback(null);
+		}, 0);
+	};
+
+	// local storage: simply delete all 'pinboard_' id keys
+	// db/server: delete board by id (implies delete notes by board id)
+	Storage.deleteBoard = function (id, callback) {
+		window.setTimeout(function () {
+			Object.keys(localStorage).forEach(function(key, idx) {
+				if (key.indexOf(boardKeyPrefix) !== 0 && key.indexOf(noteKeyPrefix) !== 0) {
+					return;
+				}
+				console.log('removing: ' + key);
+				localStorage.removeItem(key);
+			});
+
+			callback(null);
+		}, 0);
+	};
+
 	// notes ------------------------------------------------------------------
 
 	// for local storage, this simply returns all notes ignoring the board id
@@ -217,125 +348,6 @@
 
 				localStorage.setItem(key, noteJ);
 			}
-
-			callback(null);
-		}, 0);
-	};
-
-	// board -----------------------------------------------------------------
-
-	// for local storage, this simply returns the only board that is stored
-	// for server version, this returnes the currently selected board
-	Storage.getCurrentBoard = function (callback) {
-		window.setTimeout(function () {
-			var id = 'id' + boardIdCounter,
-				key = boardKeyPrefix + id,
-				boardJ = window.localStorage.getItem(key),
-				boardObj = null;
-
-			// console.log('Storage: found board: ' + boardJ);
-			if (boardJ !== null) {
-				try {
-					boardObj = window.JSON.parse(boardJ);
-				} catch (e) {
-					callback(new Error('Storage: Error while json parsing board \'' + key + '\' !'));
-					return;
-				}
-			}
-			callback(null, boardObj);
-		}, 0);
-	};
-
-	Storage.insertBoard = function (board, callback) {
-		window.setTimeout(function () {
-			var id,
-				key,
-				boardDb,
-				boardJ;
-
-			// generate new id
-			boardIdCounter += 1;
-			window.localStorage.setItem(boardIdCounterKey, boardIdCounter);
-
-			// insert board
-			id = 'id' + boardIdCounter;
-			key = boardKeyPrefix + id;
-			boardDb = $.extend({}, board, {id: id});
-			boardJ = window.JSON.stringify(boardDb);
-
-			window.localStorage.setItem(key, boardJ);
-
-			callback(null, id);
-		}, 0);
-	};
-
-	Storage.updateBoard = function (board, callback) {
-		window.setTimeout(function () {
-			var key = boardKeyPrefix + board.id,
-				boardJ = window.JSON.stringify(board);
-
-			if (!board.id) {
-				callback(new Error('Storage: updateBoard() No board id in given board!'));
-				return;
-			}
-
-			window.localStorage.setItem(key, boardJ);
-
-			callback(null);
-		}, 0);
-	};
-
-	// for local storage this simply updates the whole board
-	// for MongoDB this updates only the boards fields 'title'/'desc' ($set)
-	Storage.updateBoardsTitle = function (board, callback) {
-		window.setTimeout(function () {
-			var key = boardKeyPrefix + board.id,
-				boardJ = window.JSON.stringify(board);
-
-//
-// TODO: check if board title exists
-//
-
-			if (!board.id) {
-				callback(new Error('Storage: updateBoardsFields() Invalid board id!'));
-				return;
-			}
-
-			window.localStorage.setItem(key, boardJ);
-
-			callback(null);
-		}, 0);
-	};
-
-	// for local storage this simply updates the whole board
-	// for MongoDB this updates only the boards fields 'fields' ($set)
-	Storage.updateBoardsFields = function (board, callback) {
-		window.setTimeout(function () {
-			var key = boardKeyPrefix + board.id,
-				boardJ = window.JSON.stringify(board);
-
-			if (!board.id) {
-				callback(new Error('Storage: updateBoardsFields() No board id in given board!'));
-				return;
-			}
-
-			window.localStorage.setItem(key, boardJ);
-
-			callback(null);
-		}, 0);
-	};
-
-	// local storage: simply delete all 'pinboard_' id keys
-	// db/server: delete board by id (implies delete notes by board id)
-	Storage.deleteBoard = function (id, callback) {
-		window.setTimeout(function () {
-			Object.keys(localStorage).forEach(function(key, idx) {
-				if (key.indexOf(boardKeyPrefix) !== 0 && key.indexOf(noteKeyPrefix) !== 0) {
-					return;
-				}
-				console.log('removing: ' + key);
-				localStorage.removeItem(key);
-			});
 
 			callback(null);
 		}, 0);
