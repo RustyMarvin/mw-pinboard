@@ -30,7 +30,7 @@
 	var Events = window.MW_Pinboard.Events,
 		Fields = window.MW_Pinboard.Fields,
 		Note = window.MW_Pinboard.Note,
-		Storage = window.MW_Pinboard.Storage;
+		Storage;
 
 	var Board;
 
@@ -134,6 +134,8 @@
 			throw new Error('Board: invalid option \'mode\' given!');
 		}
 		this.mode = mode;
+
+		Storage = (this.mode === 'local') ? window.MW_Pinboard.StorageLocal : window.MW_Pinboard.StorageServer;
 
 		var initNext = function () {
 			$(window.document).ready(function () {

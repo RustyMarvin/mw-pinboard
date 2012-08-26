@@ -23,9 +23,16 @@
 (function (window, $) {
 	'use strict';
 
-	if (window.MW_Pinboard && window.MW_Pinboard.Storage) {
-		throw 'Namespace MW_Pinboard.Storage already occupied!';
+	if (window.MW_Pinboard && window.MW_Pinboard.StorageLocal) {
+		throw 'Namespace MW_Pinboard.StorageLocal already occupied!';
 	}
+
+	var StorageError = function (message) {
+		this.name = 'StorageError';
+		this.message = message || 'StorageError';
+	};
+	StorageError.prototype = new Error();
+	StorageError.prototype.constructor = StorageError;
 
 	// idCounters are used to generate db like unique id's to identify the stored items
 	var noteIdCounter = 0,
@@ -40,7 +47,7 @@
 		secret = '',
 		decryptNote = function (noteObj) {
 			if (!secret) {
-				throw 'Storage: decryptNote: No secret set!';
+				throw new StorageError('decryptNote: No secret set!');
 			}
 
 			noteObj.title = Crypt.dec(noteObj.title, secret);
@@ -48,7 +55,7 @@
 		},
 		encryptNote = function (noteObj) {
 			if (!secret) {
-				throw 'Storage: encryptNote: No secret set!';
+				throw new StorageError('encryptNote: No secret set!');
 			}
 
 			noteObj.title = Crypt.enc(noteObj.title, secret);
@@ -65,7 +72,7 @@
 
 			// check if storage is available
 			if (!localStorage || !JSON) {
-				callback(new Error('Storage: No local storage available!'));
+				callback(new StorageError('No local storage available!'));
 				return;
 			}
 
@@ -120,7 +127,7 @@
 				try {
 					boardObj = window.JSON.parse(boardJ);
 				} catch (e) {
-					callback(new Error('Storage: Error while json parsing board \'' + key + '\' !'));
+					callback(new StorageError('Invalid JSON board data \'' + key + '\' !'));
 					return;
 				}
 			}
@@ -157,7 +164,7 @@
 				boardJ = window.JSON.stringify(board);
 
 			if (!board.id) {
-				callback(new Error('Storage: updateBoard() No board id in given board!'));
+				callback(new StorageError('updateBoard() Invalid board id!'));
 				return;
 			}
 
@@ -179,7 +186,7 @@
 //
 
 			if (!board.id) {
-				callback(new Error('Storage: updateBoardsFields() Invalid board id!'));
+				callback(new StorageError('updateBoardsFields() Invalid board id!'));
 				return;
 			}
 
@@ -190,14 +197,14 @@
 	};
 
 	// for local storage this simply updates the whole board
-	// for MongoDB this updates only the boards fields 'fields' ($set)
+	// for server this updates only the boards fields 'fields' ($set)
 	Storage.updateBoardsFields = function (board, callback) {
 		window.setTimeout(function () {
 			var key = boardKeyPrefix + board.id,
 				boardJ = window.JSON.stringify(board);
 
 			if (!board.id) {
-				callback(new Error('Storage: updateBoardsFields() No board id in given board!'));
+				callback(new StorageError('updateBoardsFields() Invalid board id!'));
 				return;
 			}
 
@@ -208,14 +215,13 @@
 	};
 
 	// local storage: simply delete all 'pinboard_' id keys
-	// db/server: delete board by id (implies delete notes by board id)
+	// server: delete board by id (implies delete notes by board id)
 	Storage.deleteBoard = function (id, callback) {
 		window.setTimeout(function () {
 			Object.keys(localStorage).forEach(function(key, idx) {
 				if (key.indexOf(boardKeyPrefix) !== 0 && key.indexOf(noteKeyPrefix) !== 0) {
 					return;
 				}
-				console.log('removing: ' + key);
 				localStorage.removeItem(key);
 			});
 
@@ -249,7 +255,7 @@
 						try {
 							noteObj = JSON.parse(noteJ);
 						} catch (e) {
-							callback(new Error('Storage: Error while json parsing note \'' + key + '\' !'));
+							callback(new StorageError('Invalid JSON note data \'' + key + '\' !'));
 							return;
 						}
 						if (Crypt && secret) {
@@ -302,7 +308,7 @@
 			noteJ = window.JSON.stringify(note);
 
 			if (!note.id) {
-				callback(new Error('Storage: updateNote() No field id in given note!'));
+				callback(new StorageError('updateNote() Invalid note id!'));
 				return;
 			}
 
@@ -342,7 +348,7 @@
 				noteJ = JSON.stringify(note);
 
 				if (!note.id) {
-					callback(new Error('Storage: updateNote() No field id in given note!'));
+					callback(new StorageError('updateNote() Invalid note id!'));
 					return;
 				}
 
@@ -354,5 +360,5 @@
 	};
 
 	window.MW_Pinboard = window.MW_Pinboard || {};
-	window.MW_Pinboard.Storage = Storage;
+	window.MW_Pinboard.StorageLocal = Storage;
 }(window, jQuery));

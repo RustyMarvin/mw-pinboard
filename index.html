@@ -18,13 +18,13 @@
 			.script('js/pinboard_timer.js').wait()
 			.script('js/pinboard_mousemove.js')
 			.script('js/pinboard_mouseresize.js')
-			.script('js/pinboard_storage_local.js').wait()
-			// .script('js/pinboard_storage_server.js').wait()
+			.script('js/pinboard_storage_local.js')
+			.script('js/pinboard_storage_server.js').wait()
 			.script('js/pinboard_fields.js')
 			.script('js/pinboard_notes.js')
 			.script('js/pinboard_board.js').wait(function(){
-				// MW_Pinboard.Board.init({ mode: 'local' });
-				MW_Pinboard.Board.init();
+				MW_Pinboard.Board.init({ mode: 'local' });
+//				MW_Pinboard.Board.init();
 			});
 		</script>
 	</head>
