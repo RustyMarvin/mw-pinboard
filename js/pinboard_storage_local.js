@@ -175,15 +175,15 @@
 	};
 
 	// for local storage this simply updates the whole board
-	// for MongoDB this updates only the boards fields 'title'/'desc' ($set)
+	// for server this updates only the boards fields 'title'/'desc' ($set)
 	Storage.updateBoardsTitle = function (board, callback) {
 		window.setTimeout(function () {
 			var key = boardKeyPrefix + board.id,
 				boardJ = window.JSON.stringify(board);
 
-//
-// TODO: check if board title exists
-//
+			//
+			// TODO: check if board title exists (needed because this error can occur on the server)
+			//
 
 			if (!board.id) {
 				callback(new StorageError('updateBoardsFields() Invalid board id!'));

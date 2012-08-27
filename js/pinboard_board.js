@@ -159,7 +159,7 @@
 				self.userParams = user;
 
 				// get board from db, if no board then setup default params
-				// with MongoDB we ALWAYS get a board, but fields array could be empty
+				// with server we ALWAYS get a board, but fields array could be empty
 				Storage.getCurrentBoard(function (err, board) {
 					var boardDb;
 
@@ -500,7 +500,6 @@
 				throw err;
 			}
 		});
-
 	};
 
 	Board.onNoteClosed = function (noteObj) {
@@ -797,31 +796,24 @@
 			title = $('#renameTitle').val().trim(),
 			desc = $('#renameDesc').val().trim();
 
-		console.log('#' + title + '#');
-		console.log('#' + desc + '#');
-
 		if (title !== '') {
-			// dont update board if title unchanged
-			if (title !== this.boardParams.title || desc !== this.boardParams.desc) {
-				console.log('>> Storage update');
-				this.boardParams.title = title;
-				this.boardParams.desc = desc;
+			// update db
+			Storage.updateBoardsTitle(this.boardParams, function (err) {
+//
+// TODO: check error/return code, dont throw if error is 'board name exists'
+//
+				if (err) {
+					alert(err.message);
+					throw err;
+				}
+
+				self.boardParams.title = title;
+				self.boardParams.desc = desc;
 				$('#boardTitle').text(title);
 
-				// update db
-				Storage.updateBoardsTitle(this.boardParams, function (err) {
-					if (err) {
-						alert(err.message);
-						throw err;
-					}
-					self.$renameDialog.hide();
-					self.dialogDarkeningOff();
-				});
-			} else {
-				console.log('>> Same title/desc, NO storage update');
-				this.$renameDialog.hide();
-				this.dialogDarkeningOff();
-			}
+				self.$renameDialog.hide();
+				self.dialogDarkeningOff();
+			});
 		} else {
 			$('#renameError').text('Error: Title must not be empty!').show();
 		}
