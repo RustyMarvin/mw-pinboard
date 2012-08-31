@@ -307,9 +307,9 @@
 		}
 	};
 
-	// does not work with jQuery 1.8
 	MouseResize.prototype.hasEvent = function (jqueryObj, event, namespace) {
-		var events = jqueryObj.data('events'),
+		// .data('events') removed in jQuery 1.8, instead use $._data(element, 'events') which works in 1.7 too
+		var events = $._data(jqueryObj, 'events'),
 			hasEvent = false;
 
 		if (events && events[event]) {
