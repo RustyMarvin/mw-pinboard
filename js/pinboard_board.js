@@ -35,9 +35,27 @@
 	var Board;
 
 	// setup for the select menu
-	var menuCommandsSetup = [
-		// disabled options not needed for standalone client
-		/*
+	// local version
+	var menuCommandsSetupLocal = [
+		{
+			label: 'Pinboard',
+			options: [
+				{ title: 'Resize board', cmd: function () { Board.resizeBoard(); } },
+				{ title: 'Rename board', cmd: function () { Board.dialogRenameOpen(); } },
+				{ title: 'Delete board', cmd: function () { Board.dialogDeleteOpen(); } }
+			]
+		},
+		{
+			label: 'Help',
+			options: [
+				{ title: 'About', cmd: function () { Board.dialogAboutOpen(); } }
+				// { title: 'Help', cmd: function () { Board.visitLink('dummy_help.html'); } },
+				// { title: 'Test', cmd: function () { Board.test(); } }
+			]
+		}
+	];
+	// server version
+	var menuCommandsSetupServer = [
 		{
 			label: 'User',
 			options: [
@@ -46,16 +64,14 @@
 				{ title: 'Logout', cmd: function () { Board.visitLink('dummy_user-logout.html'); } }
 			]
 		},
-		*/
 		{
 			label: 'Pinboard',
 			options: [
 				{ title: 'Resize board', cmd: function () { Board.resizeBoard(); } },
-				{ title: 'Rename board', cmd: function () { Board.dialogRenameOpen(); } },
-				// { title: 'Rename board', cmd: function () { Board.visitLink('dummy_board-edit.html'); } },
-				// { title: 'Select board', cmd: function () { Board.visitLink('dummy_board-select.html'); } },
-				// { title: 'New board', cmd: function () { Board.visitLink('dummy_board-create.html'); } },
-				{ title: 'Delete board', cmd: function () { Board.dialogDeleteOpen(); } }
+				{ title: 'Rename board', cmd: function () { Board.visitLink('dummy_board-edit.html'); } },
+				{ title: 'Select board', cmd: function () { Board.visitLink('dummy_board-select.html'); } },
+				{ title: 'New board', cmd: function () { Board.visitLink('dummy_board-create.html'); } },
+				{ title: 'Delete board', cmd: function () { Board.visitLink('dummy_board-delete.html'); } }
 			]
 		},
 		{
@@ -373,7 +389,8 @@
 
 	Board.setupMenu = function () {
 		var self = this,
-			$menu = $('#pinboardMenu');
+			$menu = $('#pinboardMenu'),
+			menuCommandsSetup = (this.mode === 'local') ? menuCommandsSetupLocal : menuCommandsSetupServer;
 
 		// build select items
 		var selectIndex = 1;
