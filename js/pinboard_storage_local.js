@@ -27,12 +27,8 @@
 		throw 'Namespace MW_Pinboard.StorageLocal already occupied!';
 	}
 
-	var StorageError = function (message) {
-		this.name = 'StorageError';
-		this.message = message || 'StorageError';
-	};
-	StorageError.prototype = new Error();
-	StorageError.prototype.constructor = StorageError;
+	var Errors = window.MW_Pinboard.Errors,
+		PinboardError = Errors.PinboardError;
 
 	// idCounters are used to generate db like unique id's to identify the stored items
 	var noteIdCounter = 0,
@@ -47,7 +43,7 @@
 		secret = '',
 		decryptNote = function (noteObj) {
 			if (!secret) {
-				throw new StorageError('decryptNote: No secret set!');
+				throw new PinboardError('Storage: decryptNote: No secret set!');
 			}
 
 			noteObj.title = Crypt.dec(noteObj.title, secret);
@@ -55,7 +51,7 @@
 		},
 		encryptNote = function (noteObj) {
 			if (!secret) {
-				throw new StorageError('encryptNote: No secret set!');
+				throw new PinboardError('Storage: encryptNote: No secret set!');
 			}
 
 			noteObj.title = Crypt.enc(noteObj.title, secret);
@@ -72,7 +68,7 @@
 
 			// check if storage is available
 			if (!localStorage || !JSON) {
-				callback(new StorageError('No local storage available!'));
+				callback(new PinboardError('Storage: No Storage available!'));
 				return;
 			}
 
@@ -127,7 +123,7 @@
 				try {
 					boardObj = window.JSON.parse(boardJ);
 				} catch (e) {
-					callback(new StorageError('Invalid JSON board data \'' + key + '\' !'));
+					callback(new PinboardError('Storage: Invalid JSON board data \'' + key + '\' !', Errors.STATUS_INVALID_JSON));
 					return;
 				}
 			}
@@ -164,7 +160,7 @@
 				boardJ = window.JSON.stringify(board);
 
 			if (!board.id) {
-				callback(new StorageError('updateBoard() Invalid board id!'));
+				callback(new PinboardError('Storage: updateBoard: Invalid board id!', Errors.STATUS_INVALID_ID));
 				return;
 			}
 
@@ -174,43 +170,76 @@
 		}, 0);
 	};
 
-	// for local storage this simply updates the whole board
-	// for server this updates only the boards fields 'title'/'desc' ($set)
-	Storage.updateBoardsTitle = function (board, callback) {
+	Storage.updateBoardsTitle = function (boardUpd, callback) {
 		window.setTimeout(function () {
-			var key = boardKeyPrefix + board.id,
-				boardJ = window.JSON.stringify(board);
-
-			//
-			// TODO: check if board title exists (needed because this error can occur on the server)
-			//
-
-			if (!board.id) {
-				callback(new StorageError('updateBoardsFields() Invalid board id!'));
+			if (!boardUpd.id) {
+				callback(new PinboardError('Storage: updateBoardsTitle: Invalid board id!', Errors.STATUS_INVALID_ID));
+				return;
+			}
+			if (!boardUpd.title) {
+				callback(new PinboardError('Storage: updateBoardsTitle: Empty board title!', Errors.STATUS_VALUE_EMPTY));
 				return;
 			}
 
-			window.localStorage.setItem(key, boardJ);
+			// for local storage this is not that helpful, it was implemented to be as close to the server library as possible
+			// TODO: remove the 'title exists' check if storage_server implemented
+			Storage.getCurrentBoard(function (err, boardCur) {
+				var key,
+					boardJ;
 
-			callback(null);
+				if (err) {
+					callback(err);
+					return;
+				}
+
+				if (boardUpd.title === boardCur.title) {
+					callback(new PinboardError('Storage: updateBoardsTitle: Board title exists!', Errors.STATUS_VALUE_EXISTS));
+					return;
+				}
+
+				key = boardKeyPrefix + boardUpd.id;
+				boardCur.title = boardUpd.title;
+				boardCur.desc = boardUpd.desc;
+				boardJ = window.JSON.stringify(boardCur);
+
+				window.localStorage.setItem(key, boardJ);
+
+				callback(null);
+			});
 		}, 0);
 	};
 
 	// for local storage this simply updates the whole board
 	// for server this updates only the boards fields 'fields' ($set)
-	Storage.updateBoardsFields = function (board, callback) {
+	Storage.updateBoardsFields = function (boardUpd, callback) {
 		window.setTimeout(function () {
-			var key = boardKeyPrefix + board.id,
-				boardJ = window.JSON.stringify(board);
-
-			if (!board.id) {
-				callback(new StorageError('updateBoardsFields() Invalid board id!'));
+			if (!boardUpd.id) {
+				callback(new PinboardError('Storage: updateBoardsFields: Invalid board id!', Errors.STATUS_INVALID_ID));
+				return;
+			}
+			if (!boardUpd.fields || !boardUpd.fields.length) {
+				callback(new PinboardError('Storage: updateBoardsFields: Invalid fields!', Errors.STATUS_INVALID_VALUE));
 				return;
 			}
 
-			window.localStorage.setItem(key, boardJ);
+			// for local storage this is not that helpful, it was implemented to be as close to the server library as possible
+			Storage.getCurrentBoard(function (err, boardCur) {
+				var key,
+					boardJ;
 
-			callback(null);
+				if (err) {
+					callback(err);
+					return;
+				}
+
+				key = boardKeyPrefix + boardUpd.id;
+				boardCur.fields = boardUpd.fields;
+				boardJ = window.JSON.stringify(boardCur);
+
+				window.localStorage.setItem(key, boardJ);
+
+				callback(null);
+			});
 		}, 0);
 	};
 
@@ -255,7 +284,7 @@
 						try {
 							noteObj = JSON.parse(noteJ);
 						} catch (e) {
-							callback(new StorageError('Invalid JSON note data \'' + key + '\' !'));
+							callback(new PinboardError('Storage: Invalid JSON note data \'' + key + '\' !', Errors.STATUS_INVALID_JSON));
 							return;
 						}
 						if (Crypt && secret) {
@@ -299,18 +328,20 @@
 
 	Storage.updateNote = function (note, callback) {
 		window.setTimeout(function () {
-			var key = noteKeyPrefix + note.id,
+			var key,
 				noteJ;
+
+			if (!note.id) {
+				callback(new PinboardError('Storage: updateNote: Invalid note id!', Errors.STATUS_INVALID_ID));
+				return;
+			}
 
 			if (Crypt && secret) {
 				encryptNote(note);
 			}
-			noteJ = window.JSON.stringify(note);
 
-			if (!note.id) {
-				callback(new StorageError('updateNote() Invalid note id!'));
-				return;
-			}
+			key = noteKeyPrefix + note.id;
+			noteJ = window.JSON.stringify(note);
 
 			window.localStorage.setItem(key, noteJ);
 
@@ -348,7 +379,7 @@
 				noteJ = JSON.stringify(note);
 
 				if (!note.id) {
-					callback(new StorageError('updateNote() Invalid note id!'));
+					callback(new PinboardError('Storage: updateNote: Invalid note id!', Errors.STATUS_INVALID_ID));
 					return;
 				}
 

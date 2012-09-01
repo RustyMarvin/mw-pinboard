@@ -27,19 +27,15 @@
 		throw 'Namespace MW_Pinboard.StorageServer already occupied!';
 	}
 
-	var StorageError = function (message) {
-		this.name = 'StorageError';
-		this.message = message || 'StorageError';
-	};
-	StorageError.prototype = new Error();
-	StorageError.prototype.constructor = StorageError;
+	var Errors = window.MW_Pinboard.Errors,
+		PinboardError = Errors.PinboardError;
 
 	// encryption
 	var Crypt = window.GibberishAES,
 		secret = '',
 		decryptNote = function (noteObj) {
 			if (!secret) {
-				throw new StorageError('decryptNote: No secret set!');
+				throw new PinboardError('Storage: decryptNote: No secret set!');
 			}
 
 			noteObj.title = Crypt.dec(noteObj.title, secret);
@@ -47,12 +43,15 @@
 		},
 		encryptNote = function (noteObj) {
 			if (!secret) {
-				throw new StorageError('encryptNote: No secret set!');
+				throw new PinboardError('Storage: encryptNote: No secret set!');
 			}
 
 			noteObj.title = Crypt.enc(noteObj.title, secret);
 			noteObj.text = Crypt.enc(noteObj.text, secret);
 		};
+
+	// server stuff
+
 
 	// static object
 	var Storage = {};
@@ -106,7 +105,7 @@
 	// local storage: simply delete all 'pinboard_' id keys
 	// db/server: delete board by id (implies delete notes by board id)
 	Storage.deleteBoard = function (id, callback) {
-
+		// must not be implemented for AJAX
 	};
 
 	// notes ------------------------------------------------------------------

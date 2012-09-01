@@ -28,6 +28,7 @@
 	}
 
 	var Events = window.MW_Pinboard.Events,
+		Errors = window.MW_Pinboard.Errors,
 		Fields = window.MW_Pinboard.Fields,
 		Note = window.MW_Pinboard.Note,
 		Storage;
@@ -131,10 +132,14 @@
 		// max z-index counter for new notes (and dialogs)
 		zIndexMax: 0,
 		menuCommands: [],
+		// dialogs
 		$dialogDarkening: null,
 		$aboutDialog: null,
 		$deleteDialog: null,
-		$renameDialog: null
+		$renameDialog: null,
+		$renameError: null,
+		$renameTitle: null,
+		$renameDesc: null
 	};
 
 	// init methods ===========================================================
@@ -374,6 +379,9 @@
 
 		// rename dialog -------------------------------------------------------
 		this.$renameDialog = $('#renameDialog');
+		this.$renameError = $('#renameError');
+		this.$renameTitle = $('#renameTitle');
+		this.$renameDesc = $('#renameDesc');
 
 		$('#renameCancel', this.$renameDialog).on('click', function () {
 			self.onDialogRenameCancel();
@@ -385,7 +393,7 @@
 
 		// next step
 		this.setupFieldsNotes();
-	}; // setupBoardContents
+	};
 
 	Board.setupMenu = function () {
 		var self = this,
@@ -481,6 +489,7 @@
 		noteParams = $.extend({}, noteDefaultsCommon, noteDefaultsVariants[index].noteParams, { boardId: this.boardParams.id });
 
 		// TODO: max left/top == pinboard minus note dimensions
+
 		if (mx && my) {
 			noteParams.left = mx - 15;
 			noteParams.top = my - 30;
@@ -661,7 +670,7 @@
 					alert(err.message);
 					throw err;
 				}
-				// possible next step
+				// possible next step here
 			});
 		});
 	};
@@ -696,6 +705,10 @@
 				alert(err.message);
 				throw err;
 			}
+
+			//
+			// TODO: for server mode, redirect to board select/create page
+			//
 
 			// re-init boards fields, save fresh board
 			self.boardParams.fields = undefined;
@@ -803,37 +816,42 @@
 		this.dialogDarkeningOn();
 		this.$renameDialog.show();
 
-		$('#renameError').hide();
-		$('#renameTitle').val(this.boardParams.title);
-		$('#renameDesc').val(this.boardParams.desc);
+		this.$renameError.hide();
+		this.$renameTitle.val(this.boardParams.title);
+		this.$renameDesc.val(this.boardParams.desc);
 	};
 
 	Board.onDialogRenameConfirm = function () {
 		var self = this,
-			title = $('#renameTitle').val().trim(),
-			desc = $('#renameDesc').val().trim();
+			title = this.$renameTitle.val().trim(),
+			desc = this.$renameDesc.val().trim(),
+			boardNew = { id: this.boardParams.id, title: title, desc: desc };
 
-		if (title !== '') {
-			// update db
-			Storage.updateBoardsTitle(this.boardParams, function (err) {
-//
-// TODO: check error/return code, dont throw if error is 'board name exists'
-//
-				if (err) {
-					alert(err.message);
-					throw err;
+		if (!title) {
+			this.$renameError.text('Error: Title must not be empty!').show();
+			return;
+		}
+
+		Storage.updateBoardsTitle(boardNew, function (err) {
+			if (err) {
+// TODO: local mode should behave different than server mode
+				if (err.nr === Errors.STATUS_VALUE_EXISTS) {
+					self.$renameError.text('Error: This title already exists!').show();
+					return;
 				}
 
-				self.boardParams.title = title;
-				self.boardParams.desc = desc;
-				$('#boardTitle').text(title);
+				// other error
+				alert(err.message);
+				throw err;
+			}
 
-				self.$renameDialog.hide();
-				self.dialogDarkeningOff();
-			});
-		} else {
-			$('#renameError').text('Error: Title must not be empty!').show();
-		}
+			self.boardParams.title = title;
+			self.boardParams.desc = desc;
+			$('#boardTitle').text(title);
+
+			self.$renameDialog.hide();
+			self.dialogDarkeningOff();
+		});
 	};
 
 	Board.onDialogRenameCancel = function () {
