@@ -419,6 +419,21 @@
 		return false;
 	};
 
+	// helper method, primarily for board.js
+	Fields.cloneFields = function (fields) {
+		var clone = [];
+
+		fields.forEach(function (field) { // (field, index, array)
+			clone.push({
+				title: field.title,
+				cssClass: field.cssClass,
+				sizeFactor: field.sizeFactor
+			});
+		});
+
+		return clone;
+	};
+
 	window.MW_Pinboard = window.MW_Pinboard || {};
 	window.MW_Pinboard.Fields = Fields;
 }(window, jQuery));

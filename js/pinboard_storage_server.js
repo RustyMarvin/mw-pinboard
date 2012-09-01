@@ -51,12 +51,46 @@
 		};
 
 	// server stuff
+	var serverRequest = function (url, data, callback) {
+		console.log('>> serverRequest: ' + url);
 
+		$.ajax({
+			type: 'POST',
+			url: url,
+			cache: false,
+			data: data,
+			dataType: 'json',
+			success: function (data, textStatus) {
+				console.log('>> success: ', data);
+
+				// textStatus: 'success' (always?)
+				// data: { err: <null | error object>, data: <result data: null | number | object | array> }
+				if (data.err) {
+					callback(new PinboardError(data.err.message, data.err.nr), null);
+				} else {
+					callback(null, data.data);
+				}
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				console.log('>> error: ', data);
+
+				// textStatus: 'error', 'timeout', 'abort', 'parsererror'
+				// errorThrown: on HTTP error the textual portion of the HTTP status, e.g. 'Not Found', 'Internal Server Error'
+				// if server not responding, errorThrown is ''
+				callback(new PinboardError(textStatus + ': ' + errorThrown, Errors.STATUS_AJAX_ERROR), null);
+			}
+		});
+	};
 
 	// static object
-	var Storage = {};
+	var Storage = {
+		userCached: null,
+		boardCached: null
+	};
 
 	Storage.init = function (callback) {
+		// test the server connection
+
 
 	};
 
@@ -71,7 +105,12 @@
 	// for local storage, this simply returns a default object with empty fields
 	// for server version, this returnes the current user
 	Storage.getCurrentUser = function (callback) {
+		var url = '/pinboard/user/get-current',
+			data = { id: '0' }; // unused yet
 
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
 	// board ------------------------------------------------------------------
@@ -79,33 +118,36 @@
 	// for local storage, this simply returns the only board that is stored
 	// for server version, this returnes the currently selected board
 	Storage.getCurrentBoard = function (callback) {
+		var url = '/pinboard/board/get-current',
+			data = { id: '0' }; // unused yet
 
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
 	Storage.insertBoard = function (board, callback) {
-
+		throw new PinboardError('Storage: insertBoard not implemented in server library!');
 	};
 
 	Storage.updateBoard = function (board, callback) {
 
 	};
 
-	// for local storage this simply updates the whole board
-	// for MongoDB this updates only the boards fields 'title'/'desc' ($set)
 	Storage.updateBoardsTitle = function (board, callback) {
 
 	};
 
-	// for local storage this simply updates the whole board
-	// for MongoDB this updates only the boards fields 'fields' ($set)
 	Storage.updateBoardsFields = function (board, callback) {
 
 	};
 
 	// local storage: simply delete all 'pinboard_' id keys
-	// db/server: delete board by id (implies delete notes by board id)
+// server: we MUST not delete board with ajax, else we loose the session board data
+//         and can not easily select another board
+//         s.a. comments in app_routes_pinboard.js
 	Storage.deleteBoard = function (id, callback) {
-		// must not be implemented for AJAX
+		throw new PinboardError('Storage: deleteBoard not implemented in server library!');
 	};
 
 	// notes ------------------------------------------------------------------

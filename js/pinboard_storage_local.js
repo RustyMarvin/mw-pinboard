@@ -59,7 +59,10 @@
 		};
 
 	// static object
-	var Storage = {};
+	var Storage = {
+		userCached: null,
+		boardCached: null
+	};
 
 	Storage.init = function (callback) {
 		window.setTimeout(function () {
@@ -209,8 +212,6 @@
 		}, 0);
 	};
 
-	// for local storage this simply updates the whole board
-	// for server this updates only the boards fields 'fields' ($set)
 	Storage.updateBoardsFields = function (boardUpd, callback) {
 		window.setTimeout(function () {
 			if (!boardUpd.id) {
@@ -244,7 +245,7 @@
 	};
 
 	// local storage: simply delete all 'pinboard_' id keys
-	// server: delete board by id (implies delete notes by board id)
+	// server: delete board is not implemented
 	Storage.deleteBoard = function (id, callback) {
 		window.setTimeout(function () {
 			Object.keys(localStorage).forEach(function(key, idx) {

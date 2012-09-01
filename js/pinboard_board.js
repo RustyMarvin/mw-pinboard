@@ -108,7 +108,7 @@
 		{ title: 'Right field', cssClass: 'clear', sizeFactor: 0.5 }
 	];
 
-	// defaults for new board
+	// local mode only, defaults for new board
 	var boardDefaults = {
 		// id: '', // gets set after the board has been stored
 		userId: '',
@@ -190,7 +190,7 @@
 					}
 
 					if (!board) {
-						boardDb = $.extend({}, boardDefaults, { fields: fieldsDefaults });
+						boardDb = $.extend({}, boardDefaults, { fields: Fields.cloneFields(fieldsDefaults) });
 						// db insert board, update id
 						Storage.insertBoard(boardDb, function (err, id) {
 							if (err) {
@@ -206,22 +206,22 @@
 
 					// got board, check for empty fields, create default fields
 					if (!board.fields || !board.fields.length) {
-						boardDb = $.extend({}, board, { fields: fieldsDefaults });
-						// db update board
-						Storage.updateBoard(boardDb, function (err) {
+						board.fields = Fields.cloneFields(fieldsDefaults);
+
+						Storage.updateBoardsFields(board, function (err) {
 							if (err) {
 								alert(err.message);
 								throw err;
 							}
 
-							self.boardParams = $.extend({}, boardDb);
+							self.boardParams = board;
 							initNext();
 						});
 						return;
 					}
 
 					// storage ok, init board
-					self.boardParams = $.extend({}, board);
+					self.boardParams = board;
 					initNext();
 				});
 			});
@@ -675,13 +675,14 @@
 		});
 	};
 
+	// local mode only!
+	// TODO: throw error if called on server mode
 	Board.deleteBoard = function () {
 		var self = this;
 
 		console.log('Board: deleteBoard()');
 
 		// delete all board contents from DOM, notes and fields
-		// <note>.destroy()
 
 		var notesList = this.notesList,
 			notesCount = notesList.length,
@@ -706,13 +707,8 @@
 				throw err;
 			}
 
-			//
-			// TODO: for server mode, redirect to board select/create page
-			//
-
 			// re-init boards fields, save fresh board
-			self.boardParams.fields = undefined;
-			$.extend(self.boardParams, { fields: fieldsDefaults });
+			self.boardParams.fields = Fields.cloneFields(fieldsDefaults);
 
 			Fields.init(self.$pinboard, self.boardParams.fields);
 
