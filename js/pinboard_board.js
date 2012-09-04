@@ -60,19 +60,19 @@
 		{
 			label: 'User',
 			options: [
-				{ title: 'Edit account', cmd: function () { Board.visitLink('dummy_user-edit.html'); } },
-				{ title: 'Delete account', cmd: function () { Board.visitLink('dummy_user-delete.html'); } },
-				{ title: 'Logout', cmd: function () { Board.visitLink('dummy_user-logout.html'); } }
+				{ title: 'Edit account', cmd: function () { Board.visitLink('/user/edit'); } },
+				{ title: 'Delete account', cmd: function () { Board.visitLink('/user/delete'); } },
+				{ title: 'Logout', cmd: function () { Board.visitLink('/user/logout'); } }
 			]
 		},
 		{
 			label: 'Pinboard',
 			options: [
 				{ title: 'Resize board', cmd: function () { Board.resizeBoard(); } },
-				{ title: 'Rename board', cmd: function () { Board.visitLink('dummy_board-edit.html'); } },
-				{ title: 'Select board', cmd: function () { Board.visitLink('dummy_board-select.html'); } },
-				{ title: 'New board', cmd: function () { Board.visitLink('dummy_board-create.html'); } },
-				{ title: 'Delete board', cmd: function () { Board.visitLink('dummy_board-delete.html'); } }
+				{ title: 'Rename board', cmd: function () { Board.dialogRenameOpen(); } },
+				{ title: 'Select board', cmd: function () { Board.visitLink('/board/select'); } },
+				{ title: 'Create board', cmd: function () { Board.visitLink('/board/create'); } },
+				{ title: 'Delete board', cmd: function () { Board.visitLink('/board/delete'); } }
 			]
 		},
 		{

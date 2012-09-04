@@ -2,8 +2,8 @@
 <html>
 	<head>
 		<!-- MW Pinboard - (c)2012 Markus von der Wehd <mvdw@mwin.de> -->
-
 		<meta charset="utf-8">
+
 		<link type="image/x-icon" rel="icon" href="favicon.ico">
 		<link type="image/x-icon" rel="shortcut icon" href="favicon.ico">
 		<title>MW Pinboard</title>
@@ -24,8 +24,8 @@
 			.script('js/pinboard_fields.js')
 			.script('js/pinboard_notes.js')
 			.script('js/pinboard_board.js').wait(function(){
-				MW_Pinboard.Board.init({ mode: 'local' });
-//				MW_Pinboard.Board.init();
+				// MW_Pinboard.Board.init({ mode: 'server' });
+				MW_Pinboard.Board.init();
 			});
 		</script>
 	</head>

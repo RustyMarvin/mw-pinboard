@@ -50,10 +50,8 @@
 			noteObj.text = Crypt.enc(noteObj.text, secret);
 		};
 
-	// server stuff
+	// universal ajax request
 	var serverRequest = function (url, data, callback) {
-		console.log('>> serverRequest: ' + url);
-
 		$.ajax({
 			type: 'POST',
 			url: url,
@@ -61,19 +59,15 @@
 			data: data,
 			dataType: 'json',
 			success: function (data, textStatus) {
-				console.log('>> success: ', data);
-
 				// textStatus: 'success' (always?)
 				// data: { err: <null | error object>, data: <result data: null | number | object | array> }
 				if (data.err) {
 					callback(new PinboardError(data.err.message, data.err.nr), null);
-				} else {
-					callback(null, data.data);
+					return;
 				}
+				callback(null, data.data);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
-				console.log('>> error: ', data);
-
 				// textStatus: 'error', 'timeout', 'abort', 'parsererror'
 				// errorThrown: on HTTP error the textual portion of the HTTP status, e.g. 'Not Found', 'Internal Server Error'
 				// if server not responding, errorThrown is ''
@@ -88,10 +82,24 @@
 		boardCached: null
 	};
 
+	// As opposed to local storage lib, there is no 'init' needed.
+	// We test the server connection by simply requesting the current user and board
 	Storage.init = function (callback) {
-		// test the server connection
+		var self = this;
 
+		self.getCurrentUser(function (err, user) {
+			if (!err) {
+				self.userCached = user;
+			}
 
+			self.getCurrentBoard(function (err, board) {
+				if (!err) {
+					self.boardCached = board;
+				}
+
+				callback(null);
+			});
+		});
 	};
 
 	// crypt ------------------------------------------------------------------
@@ -102,11 +110,14 @@
 
 	// user -------------------------------------------------------------------
 
-	// for local storage, this simply returns a default object with empty fields
-	// for server version, this returnes the current user
 	Storage.getCurrentUser = function (callback) {
 		var url = '/pinboard/user/get-current',
 			data = { id: '0' }; // unused yet
+
+		if (this.userCached) {
+			callback(null, this.userCached);
+			return;
+		}
 
 		serverRequest(url, data, function (err, data) {
 			callback(err, data);
@@ -115,31 +126,61 @@
 
 	// board ------------------------------------------------------------------
 
-	// for local storage, this simply returns the only board that is stored
-	// for server version, this returnes the currently selected board
+	// This returnes the currently selected board from servers session
 	Storage.getCurrentBoard = function (callback) {
 		var url = '/pinboard/board/get-current',
 			data = { id: '0' }; // unused yet
+
+		if (this.boardCached) {
+			callback(null, this.boardCached);
+			return;
+		}
 
 		serverRequest(url, data, function (err, data) {
 			callback(err, data);
 		});
 	};
 
+	// not needed for server mode
+	// default board created before displaying pinboard page
 	Storage.insertBoard = function (board, callback) {
 		throw new PinboardError('Storage: insertBoard not implemented in server library!');
 	};
 
+	// updates: title, desc, fields, encryption, width, height
 	Storage.updateBoard = function (board, callback) {
+		var url = '/pinboard/board/update',
+			data = { board: JSON.stringify(board) };
 
+		this.boardCached = null;
+
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
+	// updates: title, desc
 	Storage.updateBoardsTitle = function (board, callback) {
+		var url = '/pinboard/board/update-title',
+			data = { board: JSON.stringify(board) };
 
+		this.boardCached = null;
+
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
+	// updates: fields
 	Storage.updateBoardsFields = function (board, callback) {
+		var url = '/pinboard/board/update-fields',
+			data = { board: JSON.stringify(board) };
 
+		this.boardCached = null;
+
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
 	// local storage: simply delete all 'pinboard_' id keys
@@ -152,25 +193,49 @@
 
 	// notes ------------------------------------------------------------------
 
-	// for local storage, this simply returns all notes ignoring the board id
-	Storage.getNotesByBoardId = function (boardId, callback) {
+	Storage.getNotesByBoardId = function (id, callback) {
+		var url = '/pinboard/note/get-list',
+			data = { id: id };
 
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
 	Storage.insertNote = function (note, callback) {
+		var url = '/pinboard/note/create',
+			data = { note: JSON.stringify(note) };
 
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
 	Storage.updateNote = function (note, callback) {
+		var url = '/pinboard/note/update',
+			data = { note: JSON.stringify(note) };
 
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
 	Storage.deleteNote = function (id, callback) {
+		var url = '/pinboard/note/delete',
+			data = { id: id };
 
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
 	Storage.updateNotesList = function (notesList, callback) {
+		var url = '/pinboard/note/update-list',
+			data = { note: JSON.stringify(notesList) };
 
+		serverRequest(url, data, function (err, data) {
+			callback(err, data);
+		});
 	};
 
 	window.MW_Pinboard = window.MW_Pinboard || {};
