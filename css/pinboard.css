@@ -161,6 +161,7 @@ div.note textarea {
 	resize: none;
 	width: 162px;
 	height: 56px;
+	overflow: auto;
 }
 /* google chrome input marker */
 div.note textarea:focus {

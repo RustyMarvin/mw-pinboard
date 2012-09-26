@@ -482,8 +482,7 @@
 
 	Board.onNoteAdd = function (index, mx, my) {
 		var self = this,
-			noteParams,
-			zIndex;
+			noteParams;
 
 		// create noteParams without 'id'
 		noteParams = $.extend({}, noteDefaultsCommon, noteDefaultsVariants[index].noteParams, { boardId: this.boardParams.id });

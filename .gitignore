@@ -5,3 +5,5 @@ js/gibberish-aes.min.js
 build
 build.cmd
 build.js
+.project
+.settings
