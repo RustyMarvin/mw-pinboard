@@ -7,11 +7,10 @@ The notes are stored locally in your Browser. (using localStorage)
 
 ### Compatibility
 The app is tested with current versions of the following desktop browsers:
-* Firefox
-* Opera
-* Chrome
-on Windows 7.
-It is not tested with any version of IE.
+* Firefox 15
+* Opera 12
+* Chrome 23
+* IE 9
 
 If you find bugs or have any suggestions,
 please drop a comment here on github.
